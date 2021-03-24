@@ -1,14 +1,34 @@
-version: '2'
+version: '2.1'
 services:
   nginx-proxy:
-    image: jwilder/nginx-proxy
+    image: jwilder/nginx-proxy:alpine
     container_name: nginx-proxy
+    environment:
+      - ENABLE_IPV6=true
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./data/vhost.d:/etc/nginx/vhost.d
+      - ./data/html:/usr/share/nginx/html
+      - ./data/certs:/etc/nginx/certs
+    networks:
+      - nginx-proxy
 
-  whoami:
-    image: jwilder/whoami
+  letsencrypt-nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: letsencrypt
     environment:
-      - VIRTUAL_HOST=whoami.local
+      - DEFAULT_EMAIL
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    volumes_from:
+      - nginx-proxy
+    networks:
+      - nginx-proxy
+    
+networks: 
+  nginx-proxy:
+    external: true
