@@ -10,9 +10,9 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./data/vhost.d:/etc/nginx/vhost.d
-      - ./data/html:/usr/share/nginx/html
-      - ./data/certs:/etc/nginx/certs
+      - ${NGINX_PROXY_PATH}/data/vhost.d:/etc/nginx/vhost.d
+      - ${NGINX_PROXY_PATH}/data/html:/usr/share/nginx/html
+      - ${NGINX_PROXY_PATH}/data/certs:/etc/nginx/certs
     networks:
       - nginx-proxy
 
@@ -20,15 +20,17 @@ services:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: letsencrypt
     environment:
+      # - ACME_CA_URI=https://acme-staging-v02.api.letsencrypt.org/directory
       - DEFAULT_EMAIL
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/acme.sh
     volumes_from:
       - nginx-proxy
     networks:
       - nginx-proxy
     
-networks: 
+networks:
   nginx-proxy:
     external: true
