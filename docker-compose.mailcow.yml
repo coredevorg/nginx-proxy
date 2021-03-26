@@ -1,0 +1,21 @@
+version: '2.1'
+services:
+
+  mailcow:
+    container_name: cloud
+    image: nginx:alpine
+    restart: no
+    environment:
+      - VIRTUAL_HOST=${CLOUD_HOSTNAME}
+      - LETSENCRYPT_HOST=${CLOUD_HOSTNAME}
+    volumes:
+      -  ${NGINX_PROXY_CERTS}/${CLOUD_HOSTNAME}/fullchain.pem:/etc/ssl/mail/cert.pem
+      -  ${NGINX_PROXY_CERTS}/${CLOUD_HOSTNAME}/key.pem:/etc/ssl/mail/key.pem
+      -  ${NGINX_PROXY_CERTS}/dhparam.pem:/etc/ssl/mail/dhparams.pem
+    networks:
+      nginx-proxy:
+
+networks:
+  nginx-proxy:
+    external: true
+
