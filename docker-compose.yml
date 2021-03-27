@@ -5,6 +5,7 @@ services:
     container_name: nginx-proxy
     environment:
       - ENABLE_IPV6=true
+      - NGINX_PROXY_PATH
       # default settings for dhparam.pem generation
       # - DHPARAM_BITS=4069
       # - GENERATE_DHPARAM=true
@@ -28,6 +29,7 @@ services:
       # use this for generating (untrusted) certificates
       # - ACME_CA_URI=https://acme-staging-v02.api.letsencrypt.org/directory
       - DEFAULT_EMAIL
+      - NGINX_PROXY_PATH
     restart: always
     volumes:
       # bind /etc/acme.sh to preserve letsencrypt keys
