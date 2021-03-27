@@ -3,3 +3,6 @@
 .idea/
 .env
 data/
+_data/
+_env
+
