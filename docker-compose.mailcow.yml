@@ -6,11 +6,12 @@ services:
     image: nginx:alpine
     environment:
       - VIRTUAL_HOST
+      - NGINX_PROXY_CERTS
+      - NGINX_PROXY_DHPARAM
       - LETSENCRYPT_HOST=${VIRTUAL_HOST}
     volumes:
-      -  ${NGINX_PROXY_CERTS}/${VIRTUAL_HOST}/fullchain.pem:/etc/ssl/mail/cert.pem
-      -  ${NGINX_PROXY_CERTS}/${VIRTUAL_HOST}/key.pem:/etc/ssl/mail/key.pem
-      -  ${NGINX_PROXY_DHPARAM}/dhparam.pem:/etc/ssl/mail/dhparams.pem
+      -  ${NGINX_PROXY_CERTS}:/etc/nginx-proxy/certs
+      -  ${NGINX_PROXY_DHPARAM}:/etc/nginx-proxy/dhparam
     networks:
       nginx-proxy:
 
