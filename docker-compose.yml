@@ -5,6 +5,9 @@ services:
     container_name: nginx-proxy
     environment:
       - ENABLE_IPV6=true
+      # default settings for dhparam.pem generation
+      # - DHPARAM_BITS=4069
+      # - GENERATE_DHPARAM=true
     ports:
       - "80:80"
       - "443:443"
@@ -13,6 +16,8 @@ services:
       - ${NGINX_PROXY_PATH}/data/vhost.d:/etc/nginx/vhost.d
       - ${NGINX_PROXY_PATH}/data/html:/usr/share/nginx/html
       - ${NGINX_PROXY_PATH}/data/certs:/etc/nginx/certs
+      # save custom dhparam.pem from initial generation
+      - ${NGINX_PROXY_PATH}/data/dhparam:/etc/nginx/dhparam
     networks:
       - nginx-proxy
 
@@ -20,12 +25,14 @@ services:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: letsencrypt
     environment:
+      # use this for generating (untrusted) certificates
       # - ACME_CA_URI=https://acme-staging-v02.api.letsencrypt.org/directory
       - DEFAULT_EMAIL
     restart: always
     volumes:
+      # bind /etc/acme.sh to preserve letsencrypt keys
+      - ${NGINX_PROXY_PATH}/data/acme.sh:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/acme.sh
     volumes_from:
       - nginx-proxy
     networks:
