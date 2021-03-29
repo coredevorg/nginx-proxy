@@ -11,6 +11,8 @@ echo "host $HOST is reachable"
     CHECK=false ; HTTP=$(curl -s -w %{http_code} https://$HOST -o /dev/null)
     [ "$HTTP" == "200" ] && { echo "host $HOST is up and returned $HTTP" ; exit 0; }
 }
+[ "$CHECK" == "true" ] && echo "no existing cert found for $HOST"
+echo -n "continue with container startup for $HOST ?" && read dummy && echo
 echo -n "waiting for container startup and certificat generation ."
 CONTAINER=$(docker run --rm -e "VIRTUAL_HOST=$HOST" -e "LETSENCRYPT_HOST=$HOST" --network "nginx-proxy" -d nginx:alpine)
 
