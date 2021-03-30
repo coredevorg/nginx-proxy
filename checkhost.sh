@@ -3,7 +3,7 @@
 HOST="$1"
 CERT="$(dirname $0)/data/certs/$HOST/cert.pem"
 CHECK=true
-ping -q -c1 -W1 xyz.bstrebel.net >/dev/null 2>&1 || { echo "host $HOST is not reachable" ; exit 2 ; }
+ping -q -c1 -W1 $HOST >/dev/null 2>&1 || { echo "host $HOST is not reachable" ; exit 2 ; }
 echo "host $HOST is reachable"
 [ -f "$CERT" ] && {
     echo "found cert $CERT"
@@ -12,7 +12,7 @@ echo "host $HOST is reachable"
     [ "$HTTP" == "200" ] && { echo "host $HOST is up and returned $HTTP" ; exit 0; }
 }
 [ "$CHECK" == "true" ] && echo "no existing cert found for $HOST"
-echo -n "continue with container startup for $HOST ?" && read dummy && echo
+echo -n "continue with container startup for $HOST?" && read dummy && echo
 echo -n "waiting for container startup and certificat generation ."
 CONTAINER=$(docker run --rm -e "VIRTUAL_HOST=$HOST" -e "LETSENCRYPT_HOST=$HOST" --network "nginx-proxy" -d nginx:alpine)
 
