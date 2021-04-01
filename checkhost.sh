@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-[ "$1" ] || { echo "usage: checkhost.sh <FQDN>" ; exit 1; }
-HOST="$1"
+[ "$1" ] || { echo "usage: checkhost.sh <FQDN> [additional domains]" ; exit 1; }
+HOST="$1" ; HOSTS="$1" ; [ "$2" ] && HOSTS="$HOST,$2"
 CERT="$(dirname $0)/data/certs/$HOST/cert.pem"
 CHECK=true
 ping -q -c1 -W1 $HOST >/dev/null 2>&1 || { echo "host $HOST is not reachable" ; exit 2 ; }
@@ -14,7 +14,7 @@ echo "host $HOST is reachable"
 [ "$CHECK" == "true" ] && echo "no existing cert found for $HOST"
 echo -n "continue with container startup for $HOST?" && read dummy && echo
 echo -n "waiting for container startup and certificat generation ."
-CONTAINER=$(docker run --rm -e "VIRTUAL_HOST=$HOST" -e "LETSENCRYPT_HOST=$HOST" --network "nginx-proxy" -d nginx:alpine)
+CONTAINER=$(docker run --rm -e "VIRTUAL_HOST=$HOSTS" -e "LETSENCRYPT_HOST=$HOSTS" --network "nginx-proxy" -d nginx:alpine)
 
 sleep 1 ; echo -n "." ; let timeout=30
 while [ $((timeout--)) -gt 0 ]
